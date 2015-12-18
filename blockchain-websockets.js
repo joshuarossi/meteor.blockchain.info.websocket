@@ -41,8 +41,8 @@ Blockchain = function(){
       });
       connection.on('close', function() {
           console.log('echo-protocol Connection Closed');
-          this.connect('wss://ws.blockchain.info/inv');
-          this.subscribe();
+          _this.connect('wss://ws.blockchain.info/inv');
+          _this.subscribe();
       });
       connection.on('message', function(message) {
           _this.messageHandler(message);
