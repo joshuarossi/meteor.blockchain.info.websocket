@@ -4,9 +4,10 @@ Blockchain = function(){
   this.WebSocketClient = Npm.require('websocket').client;
   this.client = new this.WebSocketClient();
   this.subscribeAllTransactions = function(){
+    this.subscribeToAll = true;
     var message = JSON.stringify({"op":"unconfirmed_sub"});
     if (this.client.connection.connected) {
-        this.client.connection.sendUTF(message);
+      this.client.connection.sendUTF(message);
     }
   };
   this.subscribeToAddressList = function () {
@@ -24,6 +25,13 @@ Blockchain = function(){
         this.client.connection.sendUTF(message);
     }
   };
+  this.subscribe = function(){
+    if(this.subscribeToAll == true){
+      this.subscribeAllTransactions();
+    } else {
+      this.subscribeToAddressList();
+    }
+  };
   this.messageHandler = function(message){
     if (message.type === 'utf8') {
       console.log("> "+ message.utf8Data);
@@ -35,6 +43,7 @@ Blockchain = function(){
   var _this = this;
   this.client.on('connect', function(connection) {
       this.connection = connection;
+      _this.subscribe();
       console.log('WebSocket Client Connected');
       connection.on('error', function(error) {
           console.log("Connection Error: " + error.toString());
@@ -42,7 +51,6 @@ Blockchain = function(){
       connection.on('close', function() {
           console.log('echo-protocol Connection Closed');
           _this.connect('wss://ws.blockchain.info/inv');
-          _this.subscribe();
       });
       connection.on('message', function(message) {
           _this.messageHandler(message);
