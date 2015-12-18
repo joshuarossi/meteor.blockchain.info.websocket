@@ -1,4 +1,5 @@
 Blockchain = function(){
+  var _this = this;
 	this.url = 'wss://ws.blockchain.info/inv';
 	this.address_list = [];
   this.WebSocketClient = Npm.require('websocket').client;
@@ -13,8 +14,8 @@ Blockchain = function(){
   this.subscribeToAddressList = function () {
     this.address_list.forEach(function(address){
       var message = JSON.stringify({"op":"addr_sub", "addr":address});
-      if (this.client.connection.connected) {
-        this.client.connection.sendUTF(message);
+      if (_this.client.connection.connected) {
+        _this.client.connection.sendUTF(message);
       }
     });
   };
@@ -40,7 +41,6 @@ Blockchain = function(){
   this.client.on('connectFailed', function(error) {
       console.log('Connect Error: ' + error.toString());
   });
-  var _this = this;
   this.client.on('connect', function(connection) {
       this.connection = connection;
       _this.subscribe();
